@@ -22,6 +22,7 @@ function Operaciones() {
         <Link to="transfer">transfer</Link>
         <Link to="up">up</Link>
         <Link to="down">down</Link>
+        <Link to="restart">restart</Link>
         <Link to="blocks">blocks</Link>
         <form className="d-flex gap-2">
           <input className="form-control" size={60} type="text" placeholder="search by address/Txn hash/Block" />

@@ -11,6 +11,7 @@ import Transfer from "./components/Transfer.jsx";
 import Bloques from "./components/Bloques.jsx";
 import NetUp from "./components/NetUp.jsx";
 import NetDown from "./components/NetDown.jsx";
+import NetRestart from "./components/NetRestart.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/net/:id/operaciones" element={<Operaciones />} >
           <Route path="up" element={<NetUp />} />
           <Route path="down" element={<NetDown />} />
+          <Route path="restart" element={<NetRestart />} />
           <Route path="faucet" element={<Faucet />} />
           <Route path="transfer" element={<Transfer />} />
           <Route path="blocks" element={<Bloques />} />

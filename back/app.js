@@ -34,7 +34,7 @@ function createGenesis(network) {
     // ejemplo de genesis
     let genesis = {
         "config": {
-            "chainId": network.chainId,
+            "chainId": parseInt(network.chainId),
             "homesteadBlock": 0,
             "eip150Block": 0,
             "eip155Block": 0,
@@ -121,9 +121,9 @@ function createBootnode(network) {
         image: ethereum/client-go:alltools-latest-arm64
         command: 'bootnode     --addr \${IPBOOTNODE}:30301 
             --netrestrict=\${SUBNET} 
-            --nodekey=/root/.ethereum/bootnode.key'
+            --nodekey=/pepe/bootnode.key'
         volumes:
-        - ./bootnode.key:/root/.ethereum/bootnode.key
+        - ./bootnode.key:/pepe/bootnode.key
         networks:
             ethnetwork:
                 ipv4_address: \${IPBOOTNODE} `
@@ -152,7 +152,7 @@ function createNodoRpc(nodo) {
             --nat "extip:${nodo.ip}"
             --http 
             --http.addr "0.0.0.0" 
-            --http.port ${nodo.port} 
+            --http.port 8545
             --http.corsdomain "*" 
             --http.api "admin,eth,debug,miner,net,txpool,personal,web3"'
     `
@@ -254,13 +254,14 @@ app.get('/down/:id', async (req, res) => {
 
 app.get('/up/:id', async (req, res) => {
     const { id } = req.params
+    const networks = JSON.parse(fs.readFileSync('./datos/networks.json').toString())
 
     const network = networks.find(i => i.id == id)
-
     if (!network)
-        res.status(404).send('No se ha encontrado la red')
-    else {
-
+    res.status(404).send('No se ha encontrado la red')
+else {
+    
+        console.log("up",network)
         const pathNetwork = path.join(DIR_NETWORKS, id)
 
         if (existsDir(path.join(DIR_BASE, 'networks', id)))
@@ -277,6 +278,7 @@ app.get('/up/:id', async (req, res) => {
         fs.writeFileSync(`${pathNetwork}/.env`, createEnv(network))
         console.log(`docker-compose -f ${pathNetwork}/docker-compose.yml up -d`)
         execSync(`docker-compose -f ${pathNetwork}/docker-compose.yml up -d`)
+        
         res.send(network);
     }
 }
@@ -285,6 +287,8 @@ app.get('/up/:id', async (req, res) => {
 app.get('/restart/:id', async (req, res) => {
     const { id } = req.params
     const pathNetwork = path.join(DIR_NETWORKS, id)
+    // docker-compose stop 
+    // update el docker-compose
     if (!existsDir(pathNetwork))
         res.status(404).send('No se ha encontrado la red')
     else {
@@ -385,6 +389,10 @@ app.get('/blocks/:net/', async (req, res) => {
     const blocks = await Promise.all(promises);
     res.send(blocks);
 })
+app.get('/isAlive/:net/', async (req, res) => {
+    res.send({"ok":true})
+}
+)
 
 app.get('/isAlive/:net/', async (req, res) => {
     const { net } = req.params
@@ -400,12 +408,15 @@ app.get('/isAlive/:net/', async (req, res) => {
     const pathNetwork = path.join(DIR_NETWORKS, network.id)
     // obtenemos el port del rpc
     const port = network.nodos.find(i => i.type == 'rpc').port
+    console.log(port)
     // creamos el provider 
     try {
         const provider = new ethers.JsonRpcProvider(`http://localhost:${port}`,
         );
         const blockNumber = await provider.getBlockNumber();
+        console.log(blockNumber)
         res.send({ alive: true , blockNumber})
+
     } catch (error) {
         res.send({ alive: false })
     }
