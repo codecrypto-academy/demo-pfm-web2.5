@@ -87,7 +87,7 @@ function createPassword(network) {
 function createNodoMiner(nodo) {
     const miner = `
     ${nodo.name}:
-        image: ethereum/client-go:latest
+        image: ethereum/client-go:v1.13.15
         volumes:
             - ./${nodo.name}:/root/.ethereum
             - ./genesis.json:/root/genesis.json
@@ -118,7 +118,7 @@ function createBootnode(network) {
     const bootnode = `
     geth-bootnode:
         hostname: geth-bootnode
-        image: ethereum/client-go:alltools-latest-arm64
+        image: ethereum/client-go:alltools-v1.13.15
         command: 'bootnode     --addr \${IPBOOTNODE}:30301 
             --netrestrict=\${SUBNET} 
             --nodekey=/pepe/bootnode.key'
@@ -134,7 +134,7 @@ function createBootnode(network) {
 function createNodoRpc(nodo) {
     const rpc = `
     ${nodo.name}:
-        image: ethereum/client-go:latest
+        image: ethereum/client-go:v1.13.15
         volumes:
             - ./${nodo.name}:/root/.ethereum
             - ./genesis.json:/root/genesis.json
@@ -163,7 +163,7 @@ function createNodoNormal(nodo) {
     const n =
         `
     ${nodo.name}:
-        image: ethereum/client-go:latest
+        image: ethereum/client-go:v1.13.15
         volumes:
             - ./${nodo.name}:/root/.ethereum
             - ./genesis.json:/root/genesis.json
@@ -389,10 +389,10 @@ app.get('/blocks/:net/', async (req, res) => {
     const blocks = await Promise.all(promises);
     res.send(blocks);
 })
-app.get('/isAlive/:net/', async (req, res) => {
-    res.send({"ok":true})
-}
-)
+
+// app.get('/isAlive/:net/', async (req, res) => {
+//    res.send({"ok":true})
+// })
 
 app.get('/isAlive/:net/', async (req, res) => {
     const { net } = req.params
